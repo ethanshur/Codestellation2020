@@ -1,5 +1,6 @@
 import bs4 as bs;
 from urllib.request import Request, urlopen;
+import csv
 
 
 def parse_plant(url):
@@ -16,8 +17,7 @@ def parse_plant(url):
             csv = csv + "None Listed." + ","
         else:
             csv = csv + arr[2] + ","
-    print(csvkey)
-    print(csv)
+    return (csvkey + "\n" + csv)
 
 def search(string):
     url = "https://practicalplants.org/w/index.php?title=Special%3ASearch&profile=all&search="
@@ -40,7 +40,7 @@ def search(string):
                     print(j["href"])
                     temp = j["href"]
                     URL = "https://practicalplants.org" + temp
-                    parse_plant(URL)
+                    return parse_plant(URL)
                     bool = True
                     break
         if bool:
@@ -49,6 +49,18 @@ def search(string):
         print("No proper result found. Please try again.")
 
 def main():
-    search("ocimum basilicum")
+    bool = True;
+    while bool:
+        plantsearch = input("What is the scientific name of the plant you are looking for?")
+        output = search(plantsearch)
+        repeat = input("Would you like to find another plant? (y/n)")
+        if repeat.lower().startswith("n"):
+            text_file = open("codestellation2020output.txt", "w")
+            output = output[:-1]
+            n = text_file.write(output)
+            text_file.close()
+            bool = False
+        output = output + "\n"
+
 
 main()
