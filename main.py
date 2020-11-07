@@ -49,18 +49,20 @@ def search(string):
 
 def main():
     bool = True
-    output = "Binomial name,Genus,Family,Edible uses,Medicinal uses,Material uses & Functions,Botanic,Propagation,Cultivation,Environment,Cultivation,Edible uses,Material uses,Medicinal uses,Functions,Provides forage for,Provides shelter for,Hardiness Zone,Heat Zone,Water,Sun,Shade,Soil PH,Soil Texture,Soil Water Retention,Environmental Tolerances,Native Climate Zones,Adapted Climate Zones,Native Geographical Range,Native Environment,Ecosystem Niche,Root Zone Tendancy,Deciduous or Evergreen,Herbaceous or Woody,Life Cycle,Growth Rate,Mature Size,Fertility,Pollinators,Flower Colour,Flower Type\n"
+    num = 0
+    output = "ID,Binomial name,Genus,Family,Edible uses,Medicinal uses,Material uses & Functions,Botanic,Propagation,Cultivation,Environment,Cultivation,Edible uses,Material uses,Medicinal uses,Functions,Provides forage for,Provides shelter for,Hardiness Zone,Heat Zone,Water,Sun,Shade,Soil PH,Soil Texture,Soil Water Retention,Environmental Tolerances,Native Climate Zones,Adapted Climate Zones,Native Geographical Range,Native Environment,Ecosystem Niche,Root Zone Tendancy,Deciduous or Evergreen,Herbaceous or Woody,Life Cycle,Growth Rate,Mature Size,Fertility,Pollinators,Flower Colour,Flower Type\n"
     while bool:
+        num = num + 1
         plantsearch = input("What is the scientific name of the plant you are looking for?")
-        output = output + search(plantsearch)
+        output = output + str(num) + "," + search(plantsearch)
         print(output)
         repeat = input("Would you like to find another plant? (y/n)")
         if repeat.lower().startswith("n"):
-            text_file = open("codestellation2020output.txt", "w")
-            n = text_file.write(output)
-            text_file.close()
-            bool = False
+            #text_file = open("codestellation2020output.txt", "w")
+            #n = text_file.write(output)
+            #text_file.close()
+            return output
         output = output + "\n"
 
 
-main()
+#main()
