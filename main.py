@@ -9,15 +9,14 @@ def parse_plant(url):
     plant_soup = bs.BeautifulSoup(plant_page, "lxml")
     mydivs = plant_soup.findAll("div", {"class": "infobox-subsection"})
     csv = ""
-    csvkey = ""
     for i in mydivs:
         arr = (i.text.split("\n"))
-        csvkey = csvkey + arr[1] + ","
         if arr[2] == "" or arr[2] == "?":
             csv = csv + "None Listed." + ","
         else:
             csv = csv + arr[2] + ","
-    return (csvkey + "\n" + csv)
+    print(csv)
+    return (csv[:-1])
 
 def search(string):
     url = "https://practicalplants.org/w/index.php?title=Special%3ASearch&profile=all&search="
@@ -49,14 +48,15 @@ def search(string):
         print("No proper result found. Please try again.")
 
 def main():
-    bool = True;
+    bool = True
+    output = "Binomial name,Genus,Family,Edible uses,Medicinal uses,Material uses & Functions,Botanic,Propagation,Cultivation,Environment,Cultivation,Edible uses,Material uses,Medicinal uses,Functions,Provides forage for,Provides shelter for,Hardiness Zone,Heat Zone,Water,Sun,Shade,Soil PH,Soil Texture,Soil Water Retention,Environmental Tolerances,Native Climate Zones,Adapted Climate Zones,Native Geographical Range,Native Environment,Ecosystem Niche,Root Zone Tendancy,Deciduous or Evergreen,Herbaceous or Woody,Life Cycle,Growth Rate,Mature Size,Fertility,Pollinators,Flower Colour,Flower Type\n"
     while bool:
         plantsearch = input("What is the scientific name of the plant you are looking for?")
-        output = search(plantsearch)
+        output = output + search(plantsearch)
+        print(output)
         repeat = input("Would you like to find another plant? (y/n)")
         if repeat.lower().startswith("n"):
             text_file = open("codestellation2020output.txt", "w")
-            output = output[:-1]
             n = text_file.write(output)
             text_file.close()
             bool = False
