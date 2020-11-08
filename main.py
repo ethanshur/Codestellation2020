@@ -26,7 +26,6 @@ def parse_plant(url):
     print(csv)
     return csv[:-1]
 
-
 def search(string):
     url = "https://practicalplants.org/w/index.php?title=Special%3ASearch&profile=all&search="
     string = string.replace(" ", "+")
