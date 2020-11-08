@@ -21,7 +21,39 @@ yy = [0]
 nameDict = {"Asparagus officinalis": "Asparagus_officinalis", "Coix lacryma-jobi": "Coix_lacryma-jobi"}
 names = list(nameDict.keys())
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+search_bar = dbc.Row(
+    [
+        dbc.Col(dbc.Input(type="search", placeholder="Search")),
+        dbc.Col(
+            dbc.Button("Search", color="primary", className="ml-2"),
+            width="auto",
+        ),
+    ],
+    no_gutters=True,
+    className="ml-auto flex-nowrap mt-3 mt-md-0",
+    align="center",
+)
 app.layout = html.Div([
+dbc.Navbar(
+        [
+            html.A(
+                dbc.Row(
+                    [
+                        dbc.Col(html.Img(src="https://i.imgur.com/gMvkB5k.jpg")),
+                        dbc.Col(dbc.NavbarBrand("Navbar", className="ml-2"))],
+                    align = "center",
+                    no_gutters = True,
+
+                ),
+             ),
+            dbc.NavbarToggler(id = "navbar-toggler"),
+            dbc.Collapse(search_bar, id = "navbar-collapse", navbar = True),
+        ],
+        color = "dark",
+        dark = True
+
+    ),
     html.Button(
         id='button',
         style={"width": "20%", "display": "inline-block"},
@@ -44,7 +76,6 @@ app.layout = html.Div([
         id = "space"
     ),
     dtc.ThemeToggle(
-        style = {"float": "middle"},
         bg_color_dark='#232323',
         icon_color_dark='#EDC575',
         bg_color_light='#07484E',
@@ -102,13 +133,6 @@ app.layout = html.Div([
                 "yaxis": {"range": value_yrange}
             }
         }),
-    dtc.SideBar([
-        dtc.SideBarItem(id='id_1', label="Water", icon="fas fa-home"),
-        dtc.SideBarItem(id='id_2', label="Sun", icon="fas fa-chart-line"),
-        dtc.SideBarItem(id='id_3', label="Shade", icon="far fa-list-alt"),
-        dtc.SideBarItem(id='id_4', label="Soil pH", icon="fas fa-info-circle"),
-        dtc.SideBarItem(id='id_5', label="Fun facts", icon="fas fa-cog")
-    ])
 ])
 
 
