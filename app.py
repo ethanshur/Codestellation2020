@@ -15,7 +15,7 @@ import dash_trich_components as dtc
 import main
 
 value_range = [0,24]
-value_yrange = [0, 1000]
+value_yrange = [0, 800]
 xx = [0]
 yy = [0]
 nameDict = {"Asparagus officinalis": "Asparagus_officinalis", "Coix lacryma-jobi": "Coix_lacryma-jobi"}
@@ -35,7 +35,7 @@ search_bar = dbc.Row(
     align="center",
 )
 app.layout = html.Div([
-dbc.Navbar(
+        dbc.Navbar(
         [
             html.A(
                 dbc.Row(
@@ -59,7 +59,6 @@ dbc.Navbar(
         style={"width": "20%", "display": "inline-block"},
         children='Update',
         n_clicks=0,
-
     ),
     dcc.Input(
         id="input",
@@ -69,7 +68,6 @@ dbc.Navbar(
     html.Div(
         id = "data",
         style = {"display": "none"},
-
     ),
     html.Div(
         "",
@@ -109,15 +107,31 @@ dbc.Navbar(
         style={"width": "8%", "display": "inline-block"},
         id="Genus",
     ),
-    dcc.ConfirmDialog(
-        children = "",
-        id = "output-confirm",
-        message = "Is this the correct plant? (Okay for yes, cancel for no)",
 
+    html.Div(
+        children= "Family name:",
+        style={"width": "7%", "display": "inline-block"},
+        id = "familyprev",
+    ),
+    html.Div(
+        children = "Family Placeholder:",
+        style={"width": "7%", "display": "inline-block"},
+        id = "Family",
+    ),
+
+    html.Div(
+        children = "Soil pH:",
+        style={"width": "7%", "display": "inline-block"},
+        id = "phprev",
+    ),
+    html.Div(
+        children = "pH Placeholder",
+        style={"width": "7%", "display": "inline-block"},
+        id = "pH",
     ),
     dcc.Graph(
-        id='graph',
-        style = {"width": "60%", "float": "right", "display": "none" },
+        id='sungraph',
+        style = {"width": "60%", "float": "right", "display": "none", "position": "static" },
         figure={
             'data': [
                 go.Scatter(
@@ -128,7 +142,43 @@ dbc.Navbar(
                     opacity=0.7,
                 ),
             ], 'layout': {
-                'title': 'Water graph',
+                'title': 'Sunlight graph',
+                "xaxis": {"range": value_range},
+                "yaxis": {"range": value_yrange}
+            }
+        }),
+    dcc.Graph(
+        id='tempgraph',
+        style = {"width": "60%", "float": "right", "display": "none", "position": "static" },
+        figure={
+            'data': [
+                go.Scatter(
+                    x=xx,
+                    y=yy,
+                    mode='markers',
+                    marker=dict(size=15, color='orange'),
+                    opacity=0.7,
+                ),
+            ], 'layout': {
+                'title': 'Temperature graph',
+                "xaxis": {"range": value_range},
+                "yaxis": {"range": value_yrange}
+            }
+        }),
+    dcc.Graph(
+        id='humiditygraph',
+        style = {"width": "60%", "float": "right", "display": "none", "position": "static" },
+        figure={
+            'data': [
+                go.Scatter(
+                    x=xx,
+                    y=yy,
+                    mode='markers',
+                    marker=dict(size=15, color='orange'),
+                    opacity=0.7,
+                ),
+            ], 'layout': {
+                'title': 'Humidity graph',
                 "xaxis": {"range": value_range},
                 "yaxis": {"range": value_yrange}
             }
@@ -154,21 +204,36 @@ def update_page(n_clicks, value, options):
 #         return message
 #     return False
 
-@app.callback([Output("Binomial name", "children"), Output("Genus", "children")], Output("data", "children"), Output("graph", "figure"), [Input("dropmenu", "value")])
+@app.callback([Output("Binomial name", "children"), Output("Genus", "children"), Output("sungraph", "style"), Output("sungraph", "figure"), Output("tempgraph", "style"), Output("humiditygraph", "style")], [Input("dropmenu", "value")])
 def update_page(value):
         dtc.ThemeToggle()
-        print(value)
         URL = "https://practicalplants.org/wiki/" + value
+        style = {"width": "60%", "float": "right"}
         String = main.parse_plant(URL)
         String = io.StringIO(String)
         predata = String
         data = pandas.read_csv(String, sep = ",")
         xx = [0,12,24]
-        if (data["Water"].item() == "moderate"):
-            yy = [500,500,500]
+
+        if (data["Sun"].item() == "full sun"):
+            yy = [650]
+            for i in range(len(xx)):
+                yy.append(yy[0])
+            print(yy)
+
+        elif (data["Sun"].item == "partial sun"):
+            yy = [500]
+            for i in range(len(xx)):
+                yy.append(yy[0])
+            print(yy)
         else:
-            yy = [250,250,250]
-        figure = {
+            yy = [300]
+            for i in range(len(xx)):
+                yy.append(yy[0])
+            print(yy)
+        print(data["Sun"].item)
+        print(data["Native Climate Zones"].item)
+        figure_sun = {
             'data': [
                 go.Scatter(
                     x=xx,
@@ -178,17 +243,14 @@ def update_page(value):
                     opacity=0.7,
                 ),
             ], 'layout': {
-                'title': (data["Binomial name"].item() + ' water graph'),
+                'title': (data["Binomial name"].item() + ' Sun Graph'),
                 "xaxis": {"range": value_range},
                 "yaxis": {"range": value_yrange}
             }
         }
-        return list(data["Binomial name"]), list(data["Genus"]), data["Genus"], figure
+        return list(data["Binomial name"]), list(data["Genus"]), style, figure_sun,style,style
 
-@app.callback([Output("graph", "figure")],[Input("id_1", "n_clicks"), Input("id_2", "n_clicks"), Input("id_3", "n_clicks"), Input("id_4", "n_clicks"), Input("id_5", "n_clicks")], [State("data", "children")])
-def update_graph(children, input1, input2, input3, input4, input5):
-    print(children)
-    print("Yes")
+
 
 # @app.callback([Output("Binomial name", "children"), Output("Genus", "children")], [Input("button", "n_clicks")], [State("input", "value")])
 # def update_page(n_clicks, value):
