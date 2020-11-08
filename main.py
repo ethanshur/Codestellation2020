@@ -10,11 +10,14 @@ def parse_plant(url):
     mydivs = plant_soup.findAll("div", {"class": "infobox-subsection"})
     csv = "Binomial name,Genus,Family,Edible uses,Medicinal uses,Material uses & Functions,Botanic,Propagation,Cultivation,Environment,Cultivation,Edible uses,Material uses,Medicinal uses,Functions,Provides forage for,Provides shelter for,Hardiness Zone,Heat Zone,Water,Sun,Shade,Soil PH,Soil Texture,Soil Water Retention,Environmental Tolerances,Native Climate Zones,Adapted Climate Zones,Native Geographical Range,Native Environment,Ecosystem Niche,Root Zone Tendancy,Deciduous or Evergreen,Herbaceous or Woody,Life Cycle,Growth Rate,Mature Size,Fertility,Pollinators,Flower Colour,Flower Type,\n"
     for i in mydivs:
+        print(i.text)
         arr = (i.text.split("\n"))
-        if arr[2] == "" or arr[2] == "?":
-            csv = csv + "None Listed." + ","
-        else:
-            csv = csv + arr[2] + ","
+        for j in range(2, len(arr)):
+            if arr[j] == "" or arr[j] == "?":
+                csv = csv + "" + ","
+            else:
+                csv = csv + arr[j].replace(",", ";") + ","
+    print(csv)
     return (csv[:-1])
 
 def search(string):
@@ -47,6 +50,3 @@ def main():
             #text_file.close()
             return output
         output = output + "\n"
-
-
-#main()
