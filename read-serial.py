@@ -18,7 +18,7 @@ while line <= samples:
     # if len(incoming) > 0:
     if print_labels:
         if line==0:
-            file.write("Sun,Humidity,Temp")
+            file.write("Sun,Temp,Humidity")
             print("Printing Column Headers")
         else:
             print("Line " + str(line) + ": writing...")
