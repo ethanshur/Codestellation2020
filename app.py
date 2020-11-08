@@ -11,7 +11,7 @@ import dash_html_components as html
 import dash_core_components as dcc
 from dash.dash import no_update
 import pandas
-
+import dash_trich_components as dtc
 import main
 
 value_range = [0,24]
@@ -29,19 +29,27 @@ app.layout = html.Div([
         n_clicks=0,
 
     ),
-    html.Img(
-        src = "https://i.imgur.com/gMvkB5k.jpg",
-        alt = "logo",
-        style = {"width": "50%", "height": "50%", "float": "right"}
-    ),
     dcc.Input(
         id="input",
         type='text',
         value='',
     ),
     html.Div(
+        id = "data",
+        style = {"display": "none"},
+
+    ),
+    html.Div(
         "",
         id = "space"
+    ),
+    dtc.ThemeToggle(
+        style = {"float": "middle"},
+        bg_color_dark='#232323',
+        icon_color_dark='#EDC575',
+        bg_color_light='#07484E',
+        icon_color_light='#C8DBDC',
+        tooltip_text='Toggle light/dark theme'
     ),
     dcc.Dropdown(
         id = "dropmenu",
@@ -78,7 +86,7 @@ app.layout = html.Div([
     ),
     dcc.Graph(
         id='graph',
-        style = {"width": "60%", "float": "right"},
+        style = {"width": "60%", "float": "right", "display": "none" },
         figure={
             'data': [
                 go.Scatter(
@@ -89,11 +97,18 @@ app.layout = html.Div([
                     opacity=0.7,
                 ),
             ], 'layout': {
-                'title': 'graph-1',
+                'title': 'Water graph',
                 "xaxis": {"range": value_range},
                 "yaxis": {"range": value_yrange}
             }
-        })
+        }),
+    dtc.SideBar([
+        dtc.SideBarItem(id='id_1', label="Water", icon="fas fa-home"),
+        dtc.SideBarItem(id='id_2', label="Sun", icon="fas fa-chart-line"),
+        dtc.SideBarItem(id='id_3', label="Shade", icon="far fa-list-alt"),
+        dtc.SideBarItem(id='id_4', label="Soil pH", icon="fas fa-info-circle"),
+        dtc.SideBarItem(id='id_5', label="Fun facts", icon="fas fa-cog")
+    ])
 ])
 
 
@@ -115,19 +130,20 @@ def update_page(n_clicks, value, options):
 #         return message
 #     return False
 
-@app.callback([Output("Binomial name", "children"), Output("Genus", "children")], Output("graph", "figure"), [Input("dropmenu", "value")])
+@app.callback([Output("Binomial name", "children"), Output("Genus", "children")], Output("data", "children"), Output("graph", "figure"), [Input("dropmenu", "value")])
 def update_page(value):
+        dtc.ThemeToggle()
         print(value)
         URL = "https://practicalplants.org/wiki/" + value
         String = main.parse_plant(URL)
         String = io.StringIO(String)
+        predata = String
         data = pandas.read_csv(String, sep = ",")
         xx = [0,12,24]
         if (data["Water"].item() == "moderate"):
             yy = [500,500,500]
         else:
             yy = [250,250,250]
-        print(xx)
         figure = {
             'data': [
                 go.Scatter(
@@ -138,12 +154,17 @@ def update_page(value):
                     opacity=0.7,
                 ),
             ], 'layout': {
-                'title': 'graph-1',
+                'title': (data["Binomial name"].item() + ' water graph'),
                 "xaxis": {"range": value_range},
                 "yaxis": {"range": value_yrange}
             }
         }
-        return list(data["Binomial name"]), list(data["Genus"]), figure
+        return list(data["Binomial name"]), list(data["Genus"]), data["Genus"], figure
+
+@app.callback([Output("graph", "figure")],[Input("id_1", "n_clicks"), Input("id_2", "n_clicks"), Input("id_3", "n_clicks"), Input("id_4", "n_clicks"), Input("id_5", "n_clicks")], [State("data", "children")])
+def update_graph(children, input1, input2, input3, input4, input5):
+    print(children)
+    print("Yes")
 
 # @app.callback([Output("Binomial name", "children"), Output("Genus", "children")], [Input("button", "n_clicks")], [State("input", "value")])
 # def update_page(n_clicks, value):
