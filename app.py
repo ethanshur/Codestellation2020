@@ -87,13 +87,13 @@ app.layout = html.Div([
     ),
     html.Div(
         children="Binomial name:",
-        style={"width": "7%", "display": "inline-block"},
+        style={"top": "", "left":"", "width": "7%", "display": "inline-block"},
         id="binomialprev",
     ),
 
     html.Div(
         children="Binomial Placeholder",
-        style={"width": "8%", "display": "inline-block"},
+        style={"top": "","left":"", "width": "8%", "display": "inline-block"},
         id="Binomial name",
     ),
 
@@ -126,8 +126,12 @@ app.layout = html.Div([
     ),
     html.Div(
         children = "pH Placeholder",
-        style={"width": "7%", "display": "inline-block"},
+        style={"height": "10%", "display": "inline-block"},
         id = "pH",
+    ),
+    html.Div(
+        children = "Special thanks to Jacob Smith for providing us a new sensor when ours broke",
+        style = {"position": "fixed", "bottom": 0, "left": 0, "width": "300px", "border": "3px solid"},
     ),
     dcc.Graph(
         id='sungraph',
@@ -204,7 +208,7 @@ def update_page(n_clicks, value, options):
 #         return message
 #     return False
 
-@app.callback([Output("Binomial name", "children"), Output("Genus", "children"), Output("sungraph", "style"), Output("sungraph", "figure"), Output("tempgraph", "style"), Output("humiditygraph", "style")], [Input("dropmenu", "value")])
+@app.callback([Output("Binomial name", "children"), Output("Genus", "children"), Output("Family", "children"), Output("pH", "children"), Output("sungraph", "style"), Output("sungraph", "figure"), Output("tempgraph", "style"), Output("humiditygraph", "style")], [Input("dropmenu", "value")])
 def update_page(value):
         dtc.ThemeToggle()
         URL = "https://practicalplants.org/wiki/" + value
@@ -248,7 +252,7 @@ def update_page(value):
                 "yaxis": {"range": value_yrange}
             }
         }
-        return list(data["Binomial name"]), list(data["Genus"]), style, figure_sun,style,style
+        return list(data["Binomial name"]), list(data["Genus"]), list(data["Family"]), list(data["Soil PH"]), style, figure_sun,style,style
 
 
 
