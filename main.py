@@ -14,9 +14,9 @@ def parse_plant(url):
         arr = (i.text.split("\n"))
         for j in range(2, len(arr)):
             if arr[j] == "" or arr[j] == "?":
-                csv = csv + "" + ""
+                csv = csv + ""
             else:
-                csv = csv + arr[j].replace(",", ";") + ""
+                csv = csv + arr[j].replace(",", ";")
         csv = csv + ","
     print(csv)
     return (csv[:-1])
