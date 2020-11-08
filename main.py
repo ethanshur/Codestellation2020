@@ -8,7 +8,7 @@ def parse_plant(url):
     plant_page = urlopen(plant_parse).read()
     plant_soup = bs.BeautifulSoup(plant_page, "lxml")
     mydivs = plant_soup.findAll("div", {"class": "infobox-subsection"})
-    csv = ""
+    csv = "Binomial name,Genus,Family,Edible uses,Medicinal uses,Material uses & Functions,Botanic,Propagation,Cultivation,Environment,Cultivation,Edible uses,Material uses,Medicinal uses,Functions,Provides forage for,Provides shelter for,Hardiness Zone,Heat Zone,Water,Sun,Shade,Soil PH,Soil Texture,Soil Water Retention,Environmental Tolerances,Native Climate Zones,Adapted Climate Zones,Native Geographical Range,Native Environment,Ecosystem Niche,Root Zone Tendancy,Deciduous or Evergreen,Herbaceous or Woody,Life Cycle,Growth Rate,Mature Size,Fertility,Pollinators,Flower Colour,Flower Type,\n"
     for i in mydivs:
         arr = (i.text.split("\n"))
         if arr[2] == "" or arr[2] == "?":
@@ -40,12 +40,10 @@ def search(string):
                     temp = j["href"]
                     URL = "https://practicalplants.org" + temp
                     return parse_plant(URL)
-                    bool = True
                     break
         if bool:
             break
-    if (not (bool)):
-        print("No proper result found. Please try again.")
+    print("No proper result found. Please try again.")
 
 def main():
     bool = True
