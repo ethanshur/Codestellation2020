@@ -15,7 +15,6 @@ def parse_plant(url):
             csv = csv + "None Listed." + ","
         else:
             csv = csv + arr[2] + ","
-    print(csv)
     return (csv[:-1])
 
 def search(string):
@@ -26,24 +25,11 @@ def search(string):
     search_page = urlopen(search_parse).read()
     search_soup = bs.BeautifulSoup(search_page, "lxml")
     results = search_soup.findAll("div", {"class": "mw-search-result-heading"})
-    results1 = search_soup.findAll("a", href = True)
-    for i in results:
-        curr = i.text
-        response = input("Did you mean " + curr + "? (Y/N)")
-        bool = False
-        if (response.lower().startswith("y")):
-            for j in results1:
-                curr1 = curr.replace(" ", "_")
-                curr1 = curr1[:-1]
-                if curr1 in j["href"]:
-                    print(j["href"])
-                    temp = j["href"]
-                    URL = "https://practicalplants.org" + temp
-                    return parse_plant(URL)
-                    break
-        if bool:
-            break
-    print("No proper result found. Please try again.")
+    results1 = []
+    for j in range(len(results)):
+        if (results[j] != None):
+            (results1.append(results[j].text.replace(" ", "_")[0:-1]))
+    return results1
 
 def main():
     bool = True

@@ -4,6 +4,7 @@ import dash
 import plotly
 from plotly.graph_objs import Scatter, Layout
 import plotly.graph_objs as go
+import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 from dash.dependencies import Input, Output, State
 import dash_html_components as html
@@ -15,9 +16,11 @@ import main
 
 value_range = [0, 24]
 value_yrange = [0, 1000]
-xx = [24]
+xx = [0]
 yy = [1000]
-app = dash.Dash(__name__)
+nameDict = {"Asparagus officinalis": "Asparagus_officinalis", "Coix lacryma-jobi": "Coix_lacryma-jobi"}
+names = list(nameDict.keys())
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.layout = html.Div([
     html.Button(
         id='button',
@@ -25,6 +28,11 @@ app.layout = html.Div([
         children='Update',
         n_clicks=0,
 
+    ),
+    html.Img(
+        src = "https://i.imgur.com/gMvkB5k.jpg",
+        alt = "logo",
+        style = {"width": "50%", "height": "50%", "float": "right"}
     ),
     dcc.Input(
         id="input",
@@ -35,7 +43,11 @@ app.layout = html.Div([
         "",
         id = "space"
     ),
-
+    dcc.Dropdown(
+        id = "dropmenu",
+        options =[{'label': name, 'value': nameDict[name]}for name in names],
+        value = nameDict[names[0]]
+    ),
     html.Div(
         children="Binomial name:",
         style={"width": "7%", "display": "inline-block"},
@@ -43,23 +55,30 @@ app.layout = html.Div([
     ),
 
     html.Div(
-        children = "Binomial Placeholder",
-        style = {"width": "8%", "display": "inline-block"},
-        id = "Binomial name",
+        children="Binomial Placeholder",
+        style={"width": "8%", "display": "inline-block"},
+        id="Binomial name",
     ),
 
-html.Div(
+    html.Div(
         children="Genus name:",
         style={"width": "7%", "display": "inline-block"},
         id="genusprev",
     ),
     html.Div(
-        children = "Genus Placeholder",
+        children="Genus Placeholder",
         style={"width": "8%", "display": "inline-block"},
-        id = "Genus",
+        id="Genus",
+    ),
+    dcc.ConfirmDialog(
+        children = "",
+        id = "output-confirm",
+        message = "Is this the correct plant? (Okay for yes, cancel for no)",
+
     ),
     dcc.Graph(
         id='graph',
+        style = {"width": "60%", "float": "right"},
         figure={
             'data': [
                 go.Scatter(
@@ -68,10 +87,7 @@ html.Div(
                     mode='markers',
                     marker=dict(size=15, color='orange'),
                     opacity=0.7,
-                    # line=dict(width=2, color="red"),
-
-                    # name=i
-                ),  # for i in df.continent.unique()
+                ),
             ], 'layout': {
                 'title': 'graph-1',
                 "xaxis": {"range": value_range},
@@ -84,37 +100,73 @@ x = xx
 y = yy
 
 
-# @app.callback(Output('graph', 'figure'), [Input('button', 'n_clicks')], [Input("input", "value")])
-# def update_graph(n_clicks):
-#     if n_clicks == 0:
-#         raise no_update
-#     #out = io.StringIO(main.search(input))
-#     #data = pandas.read_csv(out, sep=",")
-#     #if "no shade" in (data["Sun"]):
-#        # print("hello")
-#     return {
-#         'data': [{
-#             'x': x[0],
-#             'y': y[0],
-#         }],
-#         'layout': {
-#             'title': ('graph ' + str(n_clicks)),
-#             "xaxis": {"range": [0, (value_range[1] + (24 * int(n_clicks)))]},
-#         }
-#     }
-# def update_text(value):
-#     return "input: {}".format(value)
-
-@app.callback([Output("Binomial name", "children"), Output("Genus", "children")], [Input("button", "n_clicks")], [State("input", "value")])
-def update_page(n_clicks, value):
+@app.callback([Output("dropmenu", "options"), Output("dropmenu", "value")], [Input("button", "n_clicks")], [State("input", "value"), State("dropmenu", "options")],)
+def update_page(n_clicks, value, options):
     if (n_clicks != 0):
-        String = main.search(value)
+        results = main.search(value)
+        noptions = options
+        for i in results:
+            noptions.append({"label": i, "value": i})
+        print(noptions)
+        return noptions, noptions[0]["label"]
+
+    #[{'label': name, 'value': nameDict[name]} for name in names],
+
+# @app.callback([Output("Binomial name", "children")],[Input("output-confirm", "submit_n_clicks"), State("output-confirm", "message")])
+# def popup_mainsearch(submit_n_clicks, message):
+#     if (submit_n_clicks):
+#         return message
+#     return False
+
+@app.callback([Output("Binomial name", "children"), Output("Genus", "children")], Output("graph", "figure"), [Input("dropmenu", "value")])
+def update_page(value):
+        print(value)
+        URL = "https://practicalplants.org/wiki/" + value
+        String = main.parse_plant(URL)
         String = io.StringIO(String)
         data = pandas.read_csv(String, sep = ",")
-        return list(data["Binomial name"]), list(data["Genus"])
+        if (data["Water"].item() == "moderate"):
+            yy = [500]
+        else:
+            yy = [250]
+        figure = {
+            'data': [
+                go.Scatter(
+                    x=xx,
+                    y=yy,
+                    mode='markers',
+                    marker=dict(size=15, color='orange'),
+                    opacity=0.7,
+                ),
+            ], 'layout': {
+                'title': 'graph-1',
+                "xaxis": {"range": value_range},
+                "yaxis": {"range": value_yrange}
+            }
+        }
+        return list(data["Binomial name"]), list(data["Genus"]), figure
 
-
-
+# @app.callback([Output("Binomial name", "children"), Output("Genus", "children")], [Input("button", "n_clicks")], [State("input", "value")])
+# def update_page(n_clicks, value):
+#     if (n_clicks != 0):
+#         results = main.search(value)
+#         for i in range(len(results)):
+#             result = popup_spawn(results[i+1])
+#             if (result == True):
+#                 String = results[i+1]
+#         URL = "https://practicalplants.org/wiki/" + results[0]
+#         String = main.parse_plant(URL)
+#         String = io.StringIO(String)
+#         data = pandas.read_csv(String, sep = ",")
+#         return list(data["Binomial name"]), list(data["Genus"])
+#
+#
+#
+# @app.callback([Output("Binomial name", "children")],[Input("output-confirm", "submit_n_clicks"), State("output-confirm", "message")])
+# def popup_mainsearch(submit_n_clicks, message):
+#     if (submit_n_clicks):
+#         return message
+#     return False
 
 if __name__ == '__main__':
     app.run_server(debug=True)
