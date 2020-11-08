@@ -14,10 +14,10 @@ import pandas
 
 import main
 
-value_range = [0, 24]
+value_range = [0,24]
 value_yrange = [0, 1000]
 xx = [0]
-yy = [1000]
+yy = [0]
 nameDict = {"Asparagus officinalis": "Asparagus_officinalis", "Coix lacryma-jobi": "Coix_lacryma-jobi"}
 names = list(nameDict.keys())
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -46,7 +46,7 @@ app.layout = html.Div([
     dcc.Dropdown(
         id = "dropmenu",
         options =[{'label': name, 'value': nameDict[name]}for name in names],
-        value = nameDict[names[0]]
+        value = ""
     ),
     html.Div(
         children="Binomial name:",
@@ -96,9 +96,6 @@ app.layout = html.Div([
         })
 ])
 
-x = xx
-y = yy
-
 
 @app.callback([Output("dropmenu", "options"), Output("dropmenu", "value")], [Input("button", "n_clicks")], [State("input", "value"), State("dropmenu", "options")],)
 def update_page(n_clicks, value, options):
@@ -125,16 +122,18 @@ def update_page(value):
         String = main.parse_plant(URL)
         String = io.StringIO(String)
         data = pandas.read_csv(String, sep = ",")
+        xx = [0,12,24]
         if (data["Water"].item() == "moderate"):
-            yy = [500]
+            yy = [500,500,500]
         else:
-            yy = [250]
+            yy = [250,250,250]
+        print(xx)
         figure = {
             'data': [
                 go.Scatter(
                     x=xx,
                     y=yy,
-                    mode='markers',
+                    mode='lines+markers',
                     marker=dict(size=15, color='orange'),
                     opacity=0.7,
                 ),
