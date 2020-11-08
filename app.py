@@ -22,63 +22,55 @@ nameDict = {"Asparagus officinalis": "Asparagus_officinalis", "Coix lacryma-jobi
 names = list(nameDict.keys())
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-search_bar = dbc.Row(
-    [
-        dbc.Col(dbc.Input(type="search", placeholder="Search")),
-        dbc.Col(
-            dbc.Button("Search", color="primary", className="ml-2"),
-            width="auto",
-        ),
-    ],
-    no_gutters=True,
-    className="ml-auto flex-nowrap mt-3 mt-md-0",
-    align="center",
-)
+
 app.layout = html.Div([
         dbc.Navbar(
         [
             html.A(
                 dbc.Row(
                     [
-                        dbc.Col(html.Img(src="https://i.imgur.com/gMvkB5k.jpg")),
-                        dbc.Col(dbc.NavbarBrand("Navbar", className="ml-2"))],
+                        dbc.Col(html.Img(src="https://i.imgur.com/qXfTTbl.png")),
+                        dbc.Col(dbc.NavbarBrand("botNy", className="ml-2"))],
                     align = "center",
                     no_gutters = True,
 
                 ),
              ),
             dbc.NavbarToggler(id = "navbar-toggler"),
-            dbc.Collapse(search_bar, id = "navbar-collapse", navbar = True),
         ],
         color = "dark",
         dark = True
 
     ),
+    #html.Img(
+     #   id = "logo",
+     #   src = "https://i.imgur.com/qXfTTbl.png",
+     #   style = {"position": "fixed", "top": 0, "right": 0},
+     #   width = "10%",
+     #   height = "10%",
+#),
     html.Button(
         id='button',
-        style={"width": "20%", "display": "inline-block"},
+        style={"width": "10%", "display": "inline-block"},
         children='Update',
         n_clicks=0,
     ),
     dcc.Input(
         id="input",
         type='text',
+        style={"width": "30%"},
         value='',
+    ),
+
+    html.Button(
+        id = "input-button",
+        style={"width": "10%","left": 0, "display": "inline-block"},
+        children = "Import",
+        n_clicks = 0,
     ),
     html.Div(
         id = "data",
         style = {"display": "none"},
-    ),
-    html.Div(
-        "",
-        id = "space"
-    ),
-    dtc.ThemeToggle(
-        bg_color_dark='#232323',
-        icon_color_dark='#EDC575',
-        bg_color_light='#07484E',
-        icon_color_light='#C8DBDC',
-        tooltip_text='Toggle light/dark theme'
     ),
     dcc.Dropdown(
         id = "dropmenu",
@@ -87,46 +79,46 @@ app.layout = html.Div([
     ),
     html.Div(
         children="Binomial name:",
-        style={"top": "", "left":"", "width": "7%", "display": "inline-block"},
+        style={"position":"relative", "width": "7%", "display": "inline-block"},
         id="binomialprev",
     ),
 
     html.Div(
         children="Binomial Placeholder",
-        style={"top": "","left":"", "width": "8%", "display": "inline-block"},
+        style={"position":"relative", "width": "93%", "display": "inline-block"},
         id="Binomial name",
     ),
 
     html.Div(
         children="Genus name:",
-        style={"width": "7%", "display": "inline-block"},
+        style={"position":"relative","width": "7%", "display": "inline-block"},
         id="genusprev",
     ),
     html.Div(
         children="Genus Placeholder",
-        style={"width": "8%", "display": "inline-block"},
+        style={"position":"relative","width": "93%", "display": "inline-block"},
         id="Genus",
     ),
 
     html.Div(
         children= "Family name:",
-        style={"width": "7%", "display": "inline-block"},
+        style={"position":"relative","width": "7%", "display": "inline-block"},
         id = "familyprev",
     ),
     html.Div(
         children = "Family Placeholder:",
-        style={"width": "7%", "display": "inline-block"},
+        style={"position":"relative","width": "93%", "display": "inline-block"},
         id = "Family",
     ),
 
     html.Div(
         children = "Soil pH:",
-        style={"width": "7%", "display": "inline-block"},
+        style={"position":"relative","width": "7%", "display": "inline-block"},
         id = "phprev",
     ),
     html.Div(
         children = "pH Placeholder",
-        style={"height": "10%", "display": "inline-block"},
+        style={"position":"relative","height": "93%", "display": "inline-block"},
         id = "pH",
     ),
     html.Div(
@@ -212,7 +204,7 @@ def update_page(n_clicks, value, options):
 def update_page(value):
         dtc.ThemeToggle()
         URL = "https://practicalplants.org/wiki/" + value
-        style = {"width": "60%", "float": "right"}
+        style = {"width": "60%", "float": "right", "position": "relative"}
         String = main.parse_plant(URL)
         String = io.StringIO(String)
         predata = String
@@ -253,30 +245,9 @@ def update_page(value):
             }
         }
         return list(data["Binomial name"]), list(data["Genus"]), list(data["Family"]), list(data["Soil PH"]), style, figure_sun,style,style
-
-
-
-# @app.callback([Output("Binomial name", "children"), Output("Genus", "children")], [Input("button", "n_clicks")], [State("input", "value")])
-# def update_page(n_clicks, value):
-#     if (n_clicks != 0):
-#         results = main.search(value)
-#         for i in range(len(results)):
-#             result = popup_spawn(results[i+1])
-#             if (result == True):
-#                 String = results[i+1]
-#         URL = "https://practicalplants.org/wiki/" + results[0]
-#         String = main.parse_plant(URL)
-#         String = io.StringIO(String)
-#         data = pandas.read_csv(String, sep = ",")
-#         return list(data["Binomial name"]), list(data["Genus"])
-#
-#
-#
-# @app.callback([Output("Binomial name", "children")],[Input("output-confirm", "submit_n_clicks"), State("output-confirm", "message")])
-# def popup_mainsearch(submit_n_clicks, message):
-#     if (submit_n_clicks):
-#         return message
-#     return False
+@app.callback([Output("sungraph", "style"), Output("sungraph", "figure"), Output("tempgraph", "style"), Output("humiditygraph", "style")], [Input("input-button", "n_clicks")])
+def import_data(n_clicks):
+    if n_clicks != 0:
 
 if __name__ == '__main__':
     app.run_server(debug=True)
