@@ -23,7 +23,6 @@ def parse_plant(url):
             else:
                 csv = csv + arr[j].replace(",", ";")
         csv = csv + ","
-    print(csv)
     return csv[:-1]
 
 def search(string):
@@ -54,7 +53,6 @@ def main():
         num = num + 1
         plantsearch = input("What is the scientific name of the plant you are looking for?")
         output = output + str(num) + "," + search(plantsearch)
-        print(output)
         repeat = input("Would you like to find another plant? (y/n)")
         if repeat.lower().startswith("n"):
             #text_file = open("codestellation2020output.txt", "w")
