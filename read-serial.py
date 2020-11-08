@@ -1,5 +1,4 @@
 import serial
-import csv
 
 arduino_port = "/dev/cu.usbmodem14201" #serial port of Arduino
 baud = 9600 #arduino uno runs at 9600 baud
@@ -19,6 +18,7 @@ while line <= samples:
     # if len(incoming) > 0:
     if print_labels:
         if line==0:
+            file.write("Sun,Humidity,Temp")
             print("Printing Column Headers")
         else:
             print("Line " + str(line) + ": writing...")
