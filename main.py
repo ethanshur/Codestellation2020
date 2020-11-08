@@ -15,7 +15,6 @@ def parse_plant(url):
           "Deciduous or Evergreen,Herbaceous or Woody,Life Cycle,Growth Rate,Mature Size," \
           "Fertility,Pollinators,Flower Colour,Flower Type,\n"
     for i in mydivs:
-        print(i.text)
         arr = (i.text.split("\n"))
         for j in range(2, len(arr)):
             if arr[j] == "" or arr[j] == "?":
