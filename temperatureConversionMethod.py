@@ -12,7 +12,7 @@ def getTemperatureFromUSDAScale(scale):
               11: 4.4,
               12: 10
               }
-    return values[scale]
+    return convertCelciusToFarenheight(values[scale])
 
 def convertCelciusToFarenheight(temp):
     return temp*(9/5) + 32
