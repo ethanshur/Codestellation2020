@@ -20,6 +20,7 @@ body {
   background: var(--bgColor);
   color: var(--textDefault);
   z-index: -1;
+  margin-bottom: 50px;
 }
 
 h2 {
